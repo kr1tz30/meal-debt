@@ -1,0 +1,11 @@
+{
+  "margherita-pizza": { "author": "Stu Spivack", "license": "CC BY-SA 2.0", "source": "https://commons.wikimedia.org/wiki/File:Pizza_Margherita_stu_spivack.jpg" },
+  "chicken-biryani": { "author": "Mahi Tatavarty", "license": "CC BY-SA 4.0", "source": "https://commons.wikimedia.org/wiki/File:%22Hyderabadi_Dum_Biryani%22.jpg" },
+  "big-mac": { "author": "Hongreddotbrewhouse", "license": "CC BY-SA 3.0", "source": "https://commons.wikimedia.org/wiki/File:RedDot_Burger.jpg" },
+  "large-fries": { "author": "StockSnap", "license": "CC0 1.0", "source": "https://commons.wikimedia.org/wiki/File:French_Fries.JPG" },
+  "veg-momos": { "author": "Kushal Goyal", "license": "CC BY-SA 3.0", "source": "https://commons.wikimedia.org/wiki/File:Momo_nepal.jpg" },
+  "masala-dosa": { "author": "Vee Satayamas", "license": "CC BY 2.0", "source": "https://commons.wikimedia.org/wiki/File:Dosa_at_Sri_Ganesha_Restauran,_Bangkok_(44570742744).jpg" },
+  "oreo-shake": { "author": "Chris Woodrich", "license": "CC BY-SA 3.0", "source": "https://commons.wikimedia.org/wiki/File:Oreo_crumble_milkshake.jpg" },
+  "cold-coffee": { "author": "Tapas Kumar Halder", "license": "CC BY-SA 4.0", "source": "https://commons.wikimedia.org/wiki/File:Homemade_Cold_Coffee(Indian_Style)-_Kolkata.jpg" },
+  "paneer-butter-masala": { "author": "Krishnakerala", "license": "CC BY-SA 4.0", "source": "https://commons.wikimedia.org/wiki/File:Paneer_Butter_Masala.jpg" }
+}

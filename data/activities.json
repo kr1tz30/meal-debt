@@ -1,0 +1,17 @@
+[
+  { "id": "running", "name": "Running", "emoji": "🏃", "met": 9.8, "displayType": "distance", "averageSpeedKmh": 9.5, "displayUnit": "km", "color": "#FF6B35", "description": "A steady outdoor jog." },
+  { "id": "walking", "name": "Walking", "emoji": "🚶", "met": 3.8, "displayType": "distance", "averageSpeedKmh": 5.0, "displayUnit": "km", "color": "#16A34A", "description": "A brisk everyday walk." },
+  { "id": "cycling", "name": "Cycling", "emoji": "🚴", "met": 7.5, "displayType": "distance", "averageSpeedKmh": 18, "displayUnit": "km", "color": "#7C3AED", "description": "Moderate pace on a bike." },
+  { "id": "swimming", "name": "Swimming", "emoji": "🏊", "met": 8.0, "displayType": "time", "displayUnit": "min", "color": "#0EA5E9", "description": "Freestyle laps at a steady pace." },
+  { "id": "weight-training", "name": "Weight Training", "emoji": "🏋️", "met": 5.5, "displayType": "time", "displayUnit": "min", "color": "#6B7280", "description": "A focused gym session." },
+  { "id": "yoga", "name": "Yoga", "emoji": "🧘", "met": 2.5, "displayType": "time", "displayUnit": "min", "color": "#14B8A6", "description": "A calm, flowing practice." },
+  { "id": "badminton", "name": "Badminton", "emoji": "🏸", "met": 5.8, "displayType": "time", "displayUnit": "min", "color": "#EAB308", "description": "Singles on the court." },
+  { "id": "football", "name": "Football", "emoji": "⚽", "met": 7.0, "displayType": "time", "displayUnit": "min", "color": "#22C55E", "description": "A casual match with friends." },
+  { "id": "stair-climbing", "name": "Stair Climbing", "emoji": "🪜", "met": 8.8, "displayType": "floors", "displayUnit": "floors", "color": "#F59E0B", "description": "Up and down real stairs." },
+  { "id": "dancing", "name": "Dancing", "emoji": "💃", "met": 5.0, "displayType": "time", "displayUnit": "min", "color": "#EC4899", "description": "Freestyle dancing at full energy." },
+  { "id": "hiking", "name": "Hiking", "emoji": "🥾", "met": 6.0, "displayType": "distance", "averageSpeedKmh": 4.5, "displayUnit": "km", "color": "#84CC16", "description": "Trail walking with some incline." },
+  { "id": "house-cleaning", "name": "House Cleaning", "emoji": "🧹", "met": 3.3, "displayType": "time", "displayUnit": "min", "color": "#94A3B8", "description": "Sweeping, mopping, tidying up." },
+  { "id": "skipping-rope", "name": "Skipping Rope", "emoji": "🪢", "met": 11.8, "displayType": "time", "displayUnit": "min", "color": "#F97316", "description": "Continuous jump rope." },
+  { "id": "elliptical", "name": "Elliptical", "emoji": "🌀", "met": 6.5, "displayType": "time", "displayUnit": "min", "color": "#A855F7", "description": "Steady-state cardio machine." },
+  { "id": "rowing", "name": "Rowing", "emoji": "🚣", "met": 7.0, "displayType": "time", "displayUnit": "min", "color": "#0891B2", "description": "Rowing machine at moderate effort." }
+]
