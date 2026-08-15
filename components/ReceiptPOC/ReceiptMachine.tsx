@@ -23,7 +23,7 @@ export function ReceiptMachine({ phase, onTap, disabled }: ReceiptMachineProps) 
   return (
     <div
       style={{ width: MACHINE_WIDTH }}
-      className="rounded-t-[26px] rounded-b-md border-2 border-ink bg-card shadow-[6px_6px_0_0_rgba(44,27,16,0.9)] px-5 pt-0 pb-3 flex flex-col items-center"
+      className="rounded-t-[26px] border-2 border-ink bg-card shadow-[6px_6px_0_0_rgba(44,27,16,0.9)] px-5 pt-0 pb-0 flex flex-col items-center"
     >
       {/* vent (decorative) */}
       <div className="w-[80px] h-2 rounded-b-md bg-ink/40 mt-0" />
@@ -70,8 +70,30 @@ export function ReceiptMachine({ phase, onTap, disabled }: ReceiptMachineProps) 
         ))}
       </div>
 
-      {/* paper exit slot */}
-      <div style={{ width: MACHINE_WIDTH - 20 }} className="h-3 rounded-t-md bg-ink mt-4" />
+      {/* paper exit slot — warms up while printing */}
+      <motion.div
+        className="h-4 mt-3 -mx-5"
+        style={{ width: "calc(100% + 40px)" }}
+        animate={{
+          backgroundColor:
+            phase === "anticipating" || phase === "printing" ? "#3b1f0e" : "#1c1210",
+          boxShadow:
+            phase === "anticipating"
+              ? [
+                  "0 -4px 0px rgba(255,170,60,0)",
+                  "0 -4px 14px rgba(255,170,60,0.55)",
+                  "0 -4px 0px rgba(255,170,60,0)",
+                ]
+              : phase === "printing"
+              ? "0 -4px 10px rgba(255,170,60,0.28)"
+              : "none",
+        }}
+        transition={{
+          duration: phase === "anticipating" ? 0.65 : 0.4,
+          repeat: phase === "anticipating" ? Infinity : 0,
+          repeatType: "loop",
+        }}
+      />
     </div>
   );
 }
