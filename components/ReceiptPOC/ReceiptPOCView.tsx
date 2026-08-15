@@ -149,14 +149,14 @@ export function ReceiptPOCView() {
             </span>
           </div>
 
-          {/* Interactive Menu Screen Content */}
-          <div className="w-full min-h-[220px] flex flex-col items-center justify-center">
+          {/* Interactive Menu Screen Content — compact, zero wasted vertical space */}
+          <div className="w-full flex flex-col items-center justify-center transition-all duration-300">
             {picking ? (
               <div className="w-full flex flex-col items-center">
                 {!selectedFood ? (
                   <div className="w-full">
-                    <div className="flex items-center gap-2.5 rounded-xl border border-amber-500/20 bg-[#261F1B] px-3.5 py-2.5 shadow-inner">
-                      <Search size={16} className="text-amber-400/60 shrink-0" />
+                    <div className="flex items-center gap-2.5 rounded-xl border border-amber-500/20 bg-[#261F1B] px-3.5 py-2 shadow-inner">
+                      <Search size={15} className="text-amber-400/60 shrink-0" />
                       <input
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
@@ -164,71 +164,87 @@ export function ReceiptPOCView() {
                         className="w-full bg-transparent focus:outline-none text-xs text-amber-100 placeholder:text-amber-200/40 font-medium"
                       />
                     </div>
-                    <div className="mt-2 rounded-xl border border-amber-500/15 bg-[#221B17] shadow-lg overflow-hidden">
-                      {suggestions.map((f) => (
+                    <div className="mt-1.5 rounded-xl border border-amber-500/15 bg-[#221B17] shadow-lg overflow-hidden">
+                      {suggestions.slice(0, 3).map((f) => (
                         <button
                           key={f.id}
                           onClick={() => setSelectedFood(f)}
-                          style={{ height: ROW_HEIGHT }}
-                          className="w-full flex items-center gap-3 px-3.5 text-left hover:bg-amber-500/10 transition-colors border-b border-amber-500/10 last:border-0"
+                          style={{ height: 38 }}
+                          className="w-full flex items-center gap-2.5 px-3 text-left hover:bg-amber-500/10 transition-colors border-b border-amber-500/10 last:border-0"
                         >
-                          <span className="text-lg">{f.emoji}</span>
+                          <span className="text-base">{f.emoji}</span>
                           <span className="text-xs font-semibold text-amber-100">{f.name}</span>
                         </button>
                       ))}
                     </div>
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center gap-3.5 w-full py-2">
+                  <div className="flex flex-col items-center gap-3 w-full py-1">
                     <button
                       onClick={() => setSelectedFood(null)}
-                      className="flex items-center gap-2 rounded-full bg-amber-500/15 border border-amber-500/30 px-4 py-1.5 shadow-sm text-xs font-semibold text-amber-200 hover:bg-amber-500/25 transition-all"
+                      className="flex items-center gap-2 rounded-full bg-amber-500/15 border border-amber-500/30 px-3.5 py-1 shadow-sm text-xs font-semibold text-amber-200 hover:bg-amber-500/25 transition-all"
                     >
                       <span className="text-base">{selectedFood.emoji}</span>
                       {selectedFood.name}
                       <span className="text-amber-400/50 text-[10px]">(change)</span>
                     </button>
 
-                    <div className="flex items-center gap-2 bg-[#261F1B] rounded-xl border border-amber-500/20 shadow-inner p-1.5">
+                    <div className="flex items-center gap-2 bg-[#261F1B] rounded-xl border border-amber-500/20 shadow-inner px-2 py-1">
                       <button
                         onClick={() => setQuantity((q) => clampQuantity(q - 1))}
-                        className="w-8 h-8 grid place-items-center rounded-lg hover:bg-amber-500/20 text-amber-200 transition-colors"
+                        className="w-7 h-7 grid place-items-center rounded-lg hover:bg-amber-500/20 text-amber-200 transition-colors"
                         aria-label="Decrease quantity"
                       >
-                        <Minus size={14} />
+                        <Minus size={13} />
                       </button>
-                      <span className="w-10 text-center font-mono font-bold text-sm tabular-nums text-amber-100">
+                      <span className="w-8 text-center font-mono font-bold text-xs tabular-nums text-amber-100">
                         {quantity}x
                       </span>
                       <button
                         onClick={() => setQuantity((q) => clampQuantity(q + 1))}
-                        className="w-8 h-8 grid place-items-center rounded-lg hover:bg-amber-500/20 text-amber-200 transition-colors"
+                        className="w-7 h-7 grid place-items-center rounded-lg hover:bg-amber-500/20 text-amber-200 transition-colors"
                         aria-label="Increase quantity"
                       >
-                        <Plus size={14} />
+                        <Plus size={13} />
                       </button>
                     </div>
 
                     <button
                       onClick={handleTap}
-                      className="w-full mt-1 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-600 text-amber-950 font-mono font-black text-xs tracking-wider py-3 shadow-[0_4px_16px_rgba(245,158,11,0.3)] hover:brightness-110 active:scale-[0.99] transition-all flex items-center justify-center gap-2 uppercase"
+                      className="w-full mt-0.5 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-600 text-amber-950 font-mono font-black text-xs tracking-wider py-2.5 shadow-[0_4px_16px_rgba(245,158,11,0.3)] hover:brightness-110 active:scale-[0.99] transition-all flex items-center justify-center gap-2 uppercase"
                     >
-                      <Printer size={16} />
+                      <Printer size={15} />
                       PRINT WORKOUT RECEIPT
                     </button>
                   </div>
                 )}
               </div>
+            ) : phase === "done" ? (
+              <div className="w-full py-2 px-3 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between gap-2 my-0.5">
+                <div className="flex items-center gap-2 truncate">
+                  <span className="text-lg shrink-0">{selectedFood?.emoji}</span>
+                  <div className="text-left truncate">
+                    <p className="text-[11px] font-bold text-amber-100 font-mono leading-tight truncate">
+                      {selectedFood?.name} ({quantity}x)
+                    </p>
+                    <p className="text-[9.5px] font-mono text-emerald-400 leading-tight">
+                      ✓ 3 Receipts Printed Below
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={reset}
+                  className="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 text-[10px] font-mono font-bold border border-amber-500/30 transition-all flex items-center gap-1 shrink-0"
+                >
+                  <RefreshCw size={11} />
+                  NEW ORDER
+                </button>
+              </div>
             ) : (
-              <div className="py-6 flex flex-col items-center text-center gap-2">
-                <Sparkles size={24} className="text-amber-400 animate-spin" />
+              <div className="py-3 flex items-center justify-center gap-2 text-center">
+                <Sparkles size={16} className="text-amber-400 animate-spin" />
                 <p className="font-mono text-xs font-bold text-amber-200 tracking-wider uppercase">
-                  {phase === "anticipating" && "Warming Up Thermal Printer..."}
-                  {phase === "printing" && "Printing Workout Receipts..."}
-                  {phase === "done" && "Order Processed • Receipts Ready"}
-                </p>
-                <p className="text-[11px] text-amber-200/60 font-mono">
-                  {selectedFood?.emoji} {selectedFood?.name} ({quantity}x)
+                  {phase === "anticipating" ? "Warming Up Thermal Printer..." : "Printing Receipts..."}
                 </p>
               </div>
             )}
