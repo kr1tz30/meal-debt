@@ -2,27 +2,25 @@
 
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, RefreshCw, Share2, Minus, Plus, Printer } from "lucide-react";
+import { Search, RefreshCw, Share2, Minus, Plus, Printer, Store, Sparkles } from "lucide-react";
 import { Food } from "@/types/food";
 import { MealResult, WorkoutResult } from "@/types/result";
 import { searchFoods, getTrendingFoods } from "@/lib/search";
 import { buildMealResult } from "@/lib/calculations";
 import { clampQuantity } from "@/lib/validation";
 import { DEFAULT_WEIGHT_KG } from "@/lib/config";
-import { BarPrinterSlot } from "./BarPrinterSlot";
 import { MealReceiptPaper } from "./MealReceiptPaper";
 import { MACHINE_WIDTH } from "./constants";
 
 type Phase = "idle" | "anticipating" | "printing" | "done";
 
 const ANTICIPATE_DURATION = 800;
-const PRINT_SINGLE_DURATION = 1800; // time for one receipt to slide out of the slot
+const PRINT_SINGLE_DURATION = 1800;
 const PAPER_HEIGHT = 430;
-const LANDING_OFFSET_Y = 32; // Extra breathing room down from the slot bar
+const LANDING_OFFSET_Y = 32;
 const BUTTONS_HEIGHT = 180;
 const STAGE_GAP = 24;
 const STAGE_HEIGHT = PAPER_HEIGHT + LANDING_OFFSET_Y + STAGE_GAP + BUTTONS_HEIGHT;
-const PICKER_HEIGHT = 280;
 const SUGGESTIONS_COUNT = 4;
 const ROW_HEIGHT = 42;
 
@@ -38,9 +36,7 @@ export function ReceiptPOCView() {
   const [result, setResult] = useState<MealResult | null>(null);
   const [receiptMeta, setReceiptMeta] = useState({ orderNo: "0001", timestamp: "" });
 
-  // Tracks how many receipts have started dispensing (1, 2, or 3)
   const [dispensedCount, setDispensedCount] = useState<number>(0);
-  // Tracks active card index selected in the interactive stack when done
   const [activeStackIndex, setActiveStackIndex] = useState<number>(0);
 
   const suggestions = useMemo(() => {
@@ -48,7 +44,6 @@ export function ReceiptPOCView() {
     return searchFoods(query, SUGGESTIONS_COUNT);
   }, [query]);
 
-  // Array of 3 activity workout results (Running, Walking, Cycling)
   const activityWorkouts: WorkoutResult[] = useMemo(() => {
     if (!result || !result.workouts) return [];
     return result.workouts.slice(0, 3);
@@ -73,19 +68,19 @@ export function ReceiptPOCView() {
 
     setTimeout(() => {
       setPhase("printing");
-      setDispensedCount(1); // Start Receipt 1
+      setDispensedCount(1);
 
       setTimeout(() => {
-        setDispensedCount(2); // Start Receipt 2
+        setDispensedCount(2);
       }, PRINT_SINGLE_DURATION + 300);
 
       setTimeout(() => {
-        setDispensedCount(3); // Start Receipt 3
+        setDispensedCount(3);
       }, (PRINT_SINGLE_DURATION + 300) * 2);
 
       setTimeout(() => {
         setPhase("done");
-        setActiveStackIndex(2); // Set top receipt as active
+        setActiveStackIndex(2);
       }, (PRINT_SINGLE_DURATION + 300) * 3 + 200);
     }, ANTICIPATE_DURATION);
   }
@@ -102,35 +97,187 @@ export function ReceiptPOCView() {
 
   const picking = phase === "idle";
   const printed = phase === "printing" || phase === "done";
+  const isPrinting = phase === "printing" || phase === "anticipating";
 
   return (
-    <div className="min-h-screen bg-[#D8D8DC] flex flex-col items-center justify-center px-4 py-12">
+    <div className="min-h-screen relative overflow-hidden flex flex-col items-center justify-center px-4 py-8 bg-[#120D0A]">
       
+      {/* ── Dim Bistro Background Image & Warm Ambient Bokeh Overlay ── */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40 scale-105 pointer-events-none"
+        style={{ backgroundImage: "url('/bistro_bg.jpg')" }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#120D0A]/70 via-[#160E0A]/85 to-[#0F0805] pointer-events-none" />
+
+      {/* Floating Warm Bokeh Glow Orbs */}
+      <div className="absolute top-1/4 left-1/5 w-64 h-64 rounded-full bg-amber-600/15 blur-[90px] pointer-events-none" />
+      <div className="absolute top-1/3 right-1/4 w-80 h-80 rounded-full bg-yellow-600/10 blur-[110px] pointer-events-none" />
+
       {/* Page Header */}
-      <div className="mb-8 text-center">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-black/5 text-ink/70 text-xs font-mono font-semibold tracking-wider px-3.5 py-1 mb-2.5 border border-black/10">
-          <Printer size={13} />
-          BAR PRINTER DISPENSER
+      <div className="mb-6 text-center z-10 relative">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 text-amber-300 text-xs font-mono font-semibold tracking-wider px-3.5 py-1 mb-2 border border-amber-500/20 backdrop-blur-md">
+          <Store size={13} className="text-amber-400" />
+          BISTRO POS COUNTER
         </span>
-        <h1 className="font-display text-3xl font-extrabold text-ink tracking-tight">Receipt Dispenser</h1>
-        <p className="text-ink/60 text-sm mt-1">Watch receipts print sequentially & drop into the stack.</p>
+        <h1 className="font-display text-3xl font-black text-amber-50 tracking-tight drop-shadow-md">
+          Meal Debt Bistro Terminal
+        </h1>
+        <p className="text-amber-200/60 text-xs mt-1 font-mono">
+          Select your dish on the POS screen to print workout receipts onto the counter.
+        </p>
       </div>
 
-      {/* ── Main Bar Printer Enclosure Card ── */}
-      <div className="w-full max-w-[420px] rounded-[36px] bg-gradient-to-b from-[#EEEEF0] via-[#E2E2E5] to-[#D5D5D9] p-7 shadow-[0_24px_60px_rgba(0,0,0,0.18),inset_0_2px_0_rgba(255,255,255,0.9)] border border-white/70 relative flex flex-col items-center">
+      {/* ── Professional Bistro POS Terminal Device Container ── */}
+      <div className="w-full max-w-[440px] flex flex-col items-center z-10 relative">
         
-        {/* Top Metallic Slot Bar Fixture */}
-        <BarPrinterSlot phase={phase} onTap={handleTap} disabled={!selectedFood} />
+        {/* 1. Tilted Touch Screen Menu Display */}
+        <div className="w-full rounded-2xl bg-[#1C1714] border-4 border-[#332A25] shadow-[0_20px_50px_rgba(0,0,0,0.8),0_4px_12px_rgba(0,0,0,0.5)] p-4 flex flex-col relative overflow-hidden backdrop-blur-md">
+          
+          {/* Screen Top Header Bar */}
+          <div className="flex items-center justify-between border-b border-amber-500/15 pb-2.5 mb-3.5">
+            <div className="flex items-center gap-2">
+              <div className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.6)]" />
+              <span className="text-[11px] font-mono font-bold text-amber-200/90 tracking-wider uppercase">
+                BISTRO POS • TABLE 04
+              </span>
+            </div>
+            <span className="text-[10px] font-mono text-amber-400/60 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+              {phase === "idle" && "READY TO ORDER"}
+              {phase === "anticipating" && "WARMING PRINTER..."}
+              {phase === "printing" && "PRINTING DEBT..."}
+              {phase === "done" && "RECEIPTS DISPENSED"}
+            </span>
+          </div>
 
-        {/* Paper Dispenser Stage — top clipped 100% at slot line, bottom unclipped down to 9999px */}
+          {/* Interactive Menu Screen Content */}
+          <div className="w-full min-h-[220px] flex flex-col items-center justify-center">
+            {picking ? (
+              <div className="w-full flex flex-col items-center">
+                {!selectedFood ? (
+                  <div className="w-full">
+                    <div className="flex items-center gap-2.5 rounded-xl border border-amber-500/20 bg-[#261F1B] px-3.5 py-2.5 shadow-inner">
+                      <Search size={16} className="text-amber-400/60 shrink-0" />
+                      <input
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder="Search a dish or menu item..."
+                        className="w-full bg-transparent focus:outline-none text-xs text-amber-100 placeholder:text-amber-200/40 font-medium"
+                      />
+                    </div>
+                    <div className="mt-2 rounded-xl border border-amber-500/15 bg-[#221B17] shadow-lg overflow-hidden">
+                      {suggestions.map((f) => (
+                        <button
+                          key={f.id}
+                          onClick={() => setSelectedFood(f)}
+                          style={{ height: ROW_HEIGHT }}
+                          className="w-full flex items-center gap-3 px-3.5 text-left hover:bg-amber-500/10 transition-colors border-b border-amber-500/10 last:border-0"
+                        >
+                          <span className="text-lg">{f.emoji}</span>
+                          <span className="text-xs font-semibold text-amber-100">{f.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-3.5 w-full py-2">
+                    <button
+                      onClick={() => setSelectedFood(null)}
+                      className="flex items-center gap-2 rounded-full bg-amber-500/15 border border-amber-500/30 px-4 py-1.5 shadow-sm text-xs font-semibold text-amber-200 hover:bg-amber-500/25 transition-all"
+                    >
+                      <span className="text-base">{selectedFood.emoji}</span>
+                      {selectedFood.name}
+                      <span className="text-amber-400/50 text-[10px]">(change)</span>
+                    </button>
+
+                    <div className="flex items-center gap-2 bg-[#261F1B] rounded-xl border border-amber-500/20 shadow-inner p-1.5">
+                      <button
+                        onClick={() => setQuantity((q) => clampQuantity(q - 1))}
+                        className="w-8 h-8 grid place-items-center rounded-lg hover:bg-amber-500/20 text-amber-200 transition-colors"
+                        aria-label="Decrease quantity"
+                      >
+                        <Minus size={14} />
+                      </button>
+                      <span className="w-10 text-center font-mono font-bold text-sm tabular-nums text-amber-100">
+                        {quantity}x
+                      </span>
+                      <button
+                        onClick={() => setQuantity((q) => clampQuantity(q + 1))}
+                        className="w-8 h-8 grid place-items-center rounded-lg hover:bg-amber-500/20 text-amber-200 transition-colors"
+                        aria-label="Increase quantity"
+                      >
+                        <Plus size={14} />
+                      </button>
+                    </div>
+
+                    <button
+                      onClick={handleTap}
+                      className="w-full mt-1 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-600 text-amber-950 font-mono font-black text-xs tracking-wider py-3 shadow-[0_4px_16px_rgba(245,158,11,0.3)] hover:brightness-110 active:scale-[0.99] transition-all flex items-center justify-center gap-2 uppercase"
+                    >
+                      <Printer size={16} />
+                      PRINT WORKOUT RECEIPT
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="py-6 flex flex-col items-center text-center gap-2">
+                <Sparkles size={24} className="text-amber-400 animate-spin" />
+                <p className="font-mono text-xs font-bold text-amber-200 tracking-wider uppercase">
+                  {phase === "anticipating" && "Warming Up Thermal Printer..."}
+                  {phase === "printing" && "Printing Workout Receipts..."}
+                  {phase === "done" && "Order Processed • Receipts Ready"}
+                </p>
+                <p className="text-[11px] text-amber-200/60 font-mono">
+                  {selectedFood?.emoji} {selectedFood?.name} ({quantity}x)
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 2. POS Terminal Base & Thermal Printer Slot Fixture */}
+        <div className="w-[360px] bg-gradient-to-b from-[#28211D] via-[#1D1714] to-[#140F0C] border-x-2 border-b-2 border-[#3D322C] rounded-b-2xl shadow-2xl relative flex flex-col items-center justify-between p-3 z-30">
+          
+          {/* Keypad & LED Status Bar */}
+          <div className="w-full flex items-center justify-between px-3 py-1 border-b border-amber-500/10 mb-2">
+            <div className="flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-amber-400/80" />
+              <div className="w-1.5 h-1.5 rounded-full bg-amber-400/50" />
+              <div className="w-1.5 h-1.5 rounded-full bg-amber-400/30" />
+            </div>
+            <span className="font-mono text-[9px] text-amber-200/40 tracking-widest uppercase">
+              THERMAL PRINTER v2.4
+            </span>
+            <div
+              className={`w-2 h-2 rounded-full transition-all ${
+                isPrinting
+                  ? "bg-amber-400 shadow-[0_0_10px_#F59E0B] animate-ping"
+                  : phase === "done"
+                  ? "bg-emerald-400 shadow-[0_0_8px_#10B981]"
+                  : "bg-amber-500/40"
+              }`}
+            />
+          </div>
+
+          {/* Built-in Dark Aperture Printer Slot Slit */}
+          <div
+            style={{ width: MACHINE_WIDTH }}
+            className="h-6 rounded-lg bg-[#0F0A08] shadow-[inset_0_3px_8px_rgba(0,0,0,0.9)] border border-black/60 relative flex items-center justify-between px-3 overflow-hidden"
+          >
+            <span className="font-mono text-[8.5px] text-amber-200/30 tracking-widest uppercase select-none">
+              SLOT #1 • DISPENSER
+            </span>
+          </div>
+        </div>
+
+        {/* ── 3. Paper Dispenser Stage (Ejects Receipts onto Wooden Counter Table) ── */}
         <div
-          className="relative w-full flex flex-col items-center mt-[-26px] z-20"
+          className="relative w-full flex flex-col items-center mt-[-22px] z-20"
           style={{
             height: STAGE_HEIGHT,
             clipPath: "polygon(-100px 0px, 600px 0px, 600px 9999px, -100px 9999px)",
           }}
         >
-          
           {/* ── Sequential Dispense & Stack Layer ── */}
           {printed && activityWorkouts.length > 0 && (
             <div className="relative w-full flex items-center justify-center pt-2 overflow-visible" style={{ minHeight: PAPER_HEIGHT + LANDING_OFFSET_Y + 20 }}>
@@ -142,7 +289,6 @@ export function ReceiptPOCView() {
                 const isStackDone = phase === "done";
                 const isActiveInStack = isStackDone && activeStackIndex === idx;
 
-                // Base stack positions while dispensing
                 const baseRotate = idx === 0 ? -4.5 : idx === 1 ? 4.5 : -1.2;
                 const baseX = idx === 0 ? -16 : idx === 1 ? 16 : 0;
                 const baseY = LANDING_OFFSET_Y + (2 - idx) * 8;
@@ -214,82 +360,6 @@ export function ReceiptPOCView() {
             </div>
           )}
 
-          {/* Dish Picker Stage — overlayed when idle */}
-          {picking && (
-            <motion.div
-              initial={{ opacity: 1 }}
-              animate={{ opacity: picking ? 1 : 0 }}
-              transition={{ duration: 0.3 }}
-              className="w-full max-w-xs flex flex-col items-center pt-8 z-20"
-            >
-              {!selectedFood ? (
-                <div className="w-full">
-                  <div className="flex items-center gap-2.5 rounded-xl border border-black/15 bg-white/80 backdrop-blur-sm px-3.5 py-2.5 shadow-sm">
-                    <Search size={16} className="text-ink/40 shrink-0" />
-                    <input
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                      placeholder="Search a dish..."
-                      className="w-full bg-transparent focus:outline-none text-sm text-ink font-medium placeholder:text-ink/40"
-                    />
-                  </div>
-                  <div className="mt-2 rounded-xl border border-black/10 bg-white/90 backdrop-blur-sm shadow-md overflow-hidden">
-                    {suggestions.map((f) => (
-                      <button
-                        key={f.id}
-                        onClick={() => setSelectedFood(f)}
-                        style={{ height: ROW_HEIGHT }}
-                        className="w-full flex items-center gap-3 px-3.5 text-left hover:bg-black/5 transition-colors border-b border-black/[0.04] last:border-0"
-                      >
-                        <span className="text-lg">{f.emoji}</span>
-                        <span className="text-xs font-semibold text-ink">{f.name}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center gap-4 w-full">
-                  <button
-                    onClick={() => setSelectedFood(null)}
-                    className="flex items-center gap-2 rounded-full bg-white/90 border border-black/10 px-4 py-1.5 shadow-sm text-xs font-semibold text-ink"
-                  >
-                    <span className="text-base">{selectedFood.emoji}</span>
-                    {selectedFood.name}
-                    <span className="text-ink/40 text-[10px]">(change)</span>
-                  </button>
-
-                  <div className="flex items-center gap-1.5 bg-white/90 rounded-2xl border border-black/10 shadow-sm p-1.5">
-                    <button
-                      onClick={() => setQuantity((q) => clampQuantity(q - 1))}
-                      className="w-8 h-8 grid place-items-center rounded-xl hover:bg-black/5 text-ink"
-                      aria-label="Decrease quantity"
-                    >
-                      <Minus size={15} />
-                    </button>
-                    <span className="w-8 text-center font-mono font-bold text-sm tabular-nums text-ink">
-                      {quantity}
-                    </span>
-                    <button
-                      onClick={() => setQuantity((q) => clampQuantity(q + 1))}
-                      className="w-8 h-8 grid place-items-center rounded-xl hover:bg-black/5 text-ink"
-                      aria-label="Increase quantity"
-                    >
-                      <Plus size={15} />
-                    </button>
-                  </div>
-
-                  <button
-                    onClick={handleTap}
-                    className="w-full mt-2 rounded-xl bg-ink text-white font-mono font-bold text-xs tracking-wider py-3 shadow-md hover:bg-ink/90 active:scale-[0.99] transition-all flex items-center justify-center gap-2"
-                  >
-                    <Printer size={15} />
-                    DISPENSE 3 SEQUENTIAL RECEIPTS
-                  </button>
-                </div>
-              )}
-            </motion.div>
-          )}
-
           {/* ── Multi-Receipt Activity Tabs (Positioned AT THE BOTTOM below receipt stack!) ── */}
           <AnimatePresence>
             {phase === "done" && activityWorkouts.length > 0 && (
@@ -307,10 +377,10 @@ export function ReceiptPOCView() {
                     <button
                       key={w.activity.id}
                       onClick={() => setActiveStackIndex(idx)}
-                      className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-mono font-bold transition-all shadow-sm ${
+                      className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-mono font-bold transition-all shadow-md ${
                         isActive
-                          ? "bg-ink text-white shadow-md scale-105"
-                          : "bg-white/90 text-ink/70 hover:bg-white border border-black/10"
+                          ? "bg-amber-400 text-amber-950 shadow-amber-500/20 scale-105"
+                          : "bg-[#28211D]/90 text-amber-200/80 hover:bg-[#332A25] border border-amber-500/20 backdrop-blur-md"
                       }`}
                     >
                       <span>{w.activity.emoji}</span>
@@ -331,13 +401,13 @@ export function ReceiptPOCView() {
               phase === "done" ? "z-40" : "pointer-events-none"
             }`}
           >
-            <button className="inline-flex items-center gap-2 rounded-xl bg-ink px-6 py-2.5 text-xs font-mono font-bold text-white shadow-md hover:bg-ink/90 transition-all">
+            <button className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 px-6 py-2.5 text-xs font-mono font-bold text-amber-950 shadow-lg hover:brightness-110 transition-all">
               <Share2 size={14} />
               SHARE RECEIPT STACK
             </button>
             <button
               onClick={reset}
-              className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-ink/60 hover:text-ink transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-amber-200/60 hover:text-amber-200 transition-colors"
             >
               <RefreshCw size={13} />
               Print Another Meal
