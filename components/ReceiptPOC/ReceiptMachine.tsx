@@ -1,55 +1,77 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, Hand } from "lucide-react";
+import { Hand, Check } from "lucide-react";
+import { MACHINE_WIDTH } from "./constants";
 
 interface ReceiptMachineProps {
-  tapped: boolean;
+  phase: "idle" | "anticipating" | "printing" | "done";
   onTap: () => void;
   disabled?: boolean;
 }
 
-export function ReceiptMachine({ tapped, onTap, disabled }: ReceiptMachineProps) {
-  return (
-    <div className="relative w-[260px]">
-      <svg viewBox="0 0 260 300" className="w-full h-auto drop-shadow-lift" aria-hidden>
-        <rect x="8" y="8" width="244" height="284" rx="28" fill="#FFFBF2" stroke="#C9972E" strokeWidth="3" />
-        <circle cx="30" cy="32" r="5" fill="#4C7A3F" />
-        <text x="230" y="36" textAnchor="end" fontSize="11" fill="#B9A588" fontFamily="var(--font-playfair), serif">
-          MEAL DEBT
-        </text>
-        <rect x="40" y="56" width="180" height="16" rx="8" fill="#2C1B10" />
-        <rect x="40" y="56" width="180" height="6" rx="3" fill="#4A3222" />
-      </svg>
+const KEYPAD_ROWS = [
+  ["1", "2", "3"],
+  ["4", "5", "6"],
+  ["7", "8", "9"],
+  ["*", "0", "#"],
+];
 
-      {/* button */}
+export function ReceiptMachine({ phase, onTap, disabled }: ReceiptMachineProps) {
+  const tapped = phase !== "idle";
+
+  return (
+    <div
+      style={{ width: MACHINE_WIDTH }}
+      className="rounded-t-[26px] rounded-b-md border-2 border-ink bg-card shadow-[6px_6px_0_0_rgba(44,27,16,0.9)] px-5 pt-0 pb-3 flex flex-col items-center"
+    >
+      {/* vent (decorative) */}
+      <div className="w-[80px] h-2 rounded-b-md bg-ink/40 mt-0" />
+
+      <p className="font-mono text-[10px] tracking-[0.2em] text-muted mt-3 mb-3">MEAL DEBT PRINTER</p>
+
+      {/* screen / tap area */}
       <button
         type="button"
         onClick={onTap}
         disabled={disabled}
         aria-label="Tap to create receipt"
-        className="absolute left-1/2 -translate-x-1/2 disabled:pointer-events-none"
-        style={{ top: "38%" }}
+        className="w-full disabled:opacity-40 disabled:pointer-events-none"
       >
         <motion.div
-          whileHover={disabled ? undefined : { scale: 1.04 }}
-          whileTap={disabled ? undefined : { scale: 0.94 }}
-          animate={{ scale: tapped ? [1, 0.9, 1] : 1 }}
-          transition={{ duration: 0.3 }}
-          className="w-24 h-24 rounded-full bg-accent border-4 border-gold shadow-card grid place-items-center"
+          whileHover={disabled ? undefined : { y: -1 }}
+          whileTap={disabled ? undefined : { y: 1 }}
+          animate={phase === "anticipating" ? { scale: [1, 1.03, 1] } : { scale: 1 }}
+          transition={{ duration: 0.6, repeat: phase === "anticipating" ? Infinity : 0 }}
+          className="w-full h-32 rounded-2xl bg-[#CDEEDD] border-2 border-ink flex flex-col items-center justify-center gap-2"
         >
           {tapped ? (
-            <Check size={34} className="text-white" />
+            <Check size={30} className="text-ink" strokeWidth={2.5} />
           ) : (
-            <Hand size={30} className="text-white" />
+            <Hand size={28} className="text-ink" strokeWidth={2} />
           )}
+          <span className="font-mono text-[11px] font-bold tracking-[0.1em] text-ink">
+            {phase === "idle" && "TAP TO CREATE"}
+            {phase === "anticipating" && "WARMING UP..."}
+            {(phase === "printing" || phase === "done") && "PRINTING..."}
+          </span>
         </motion.div>
       </button>
 
-      <p className="absolute left-1/2 -translate-x-1/2 text-center text-[13px] font-bold tracking-[0.14em] text-accent whitespace-nowrap"
-         style={{ top: "76%" }}>
-        {tapped ? "PRINTING..." : "TAP TO CREATE"}
-      </p>
+      {/* decorative keypad */}
+      <div className="grid grid-cols-3 gap-2 mt-5 w-full">
+        {KEYPAD_ROWS.flat().map((k) => (
+          <div
+            key={k}
+            className="h-8 rounded-lg border-2 border-ink/70 bg-[#F5F1E6] grid place-items-center font-mono text-[11px] text-ink/50"
+          >
+            {k}
+          </div>
+        ))}
+      </div>
+
+      {/* paper exit slot */}
+      <div style={{ width: MACHINE_WIDTH - 20 }} className="h-3 rounded-t-md bg-ink mt-4" />
     </div>
   );
 }
