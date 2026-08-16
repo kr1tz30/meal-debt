@@ -22,7 +22,7 @@ const BOOK_VARIANTS = {
 function PagePlaceholder({ label }: { label: string }) {
   return (
     <div className="absolute right-0 top-0 flex h-full w-1/2 flex-col items-center justify-center gap-2 rounded-sm bg-[#f6ead6] text-ink/35 shadow-2xl">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-dashed border-ink/20">
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-ink/5">
         <ImageIcon size={20} strokeWidth={1.5} />
       </div>
       <span className="text-xs font-medium tracking-wide">{label}</span>
@@ -70,12 +70,11 @@ function FoodSelectionPage() {
         <h2 className="font-display text-[15px] font-bold tracking-tight text-ink sm:text-lg">
           Le Gourmet
         </h2>
-        <div className="mx-auto mt-1 h-px w-10 bg-gold/50" />
       </div>
 
       {/* search field */}
       <div className="relative mt-3 px-3 sm:px-4">
-        <div className="flex items-center gap-1.5 rounded-sm border border-ink/15 bg-white/50 px-2 py-1.5">
+        <div className="flex items-center gap-1.5 rounded-sm bg-ink/5 px-2.5 py-1.5">
           <Search size={11} className="shrink-0 text-ink/40" />
           <input
             value={query}
@@ -91,14 +90,14 @@ function FoodSelectionPage() {
         </div>
 
         {query.trim() && (
-          <div className="absolute inset-x-3 top-[calc(100%-2px)] z-10 overflow-hidden rounded-sm border border-ink/10 bg-[#fffaf0] shadow-lift sm:inset-x-4">
+          <div className="absolute inset-x-3 top-[calc(100%+4px)] z-10 overflow-hidden rounded-sm bg-[#fffaf0] shadow-2xl sm:inset-x-4">
             {results.length > 0 ? (
               results.map((food) => (
                 <button
                   key={food.id}
                   type="button"
                   onClick={() => addFood(food)}
-                  className="flex w-full items-center gap-2 px-2 py-1.5 text-left hover:bg-ink/5"
+                  className="flex w-full items-center gap-2 px-2.5 py-1.5 text-left hover:bg-ink/5"
                 >
                   <span className="text-[12px] leading-none">{food.emoji}</span>
                   <span className="flex-1 truncate text-[9px] text-ink/85 sm:text-[10px]">
@@ -163,7 +162,7 @@ function FoodSelectionPage() {
       </div>
 
       {/* running total + order action, pinned to the bottom of the page */}
-      <div className="shrink-0 border-t border-ink/10 px-4 py-3 sm:px-5 sm:py-4">
+      <div className="shrink-0 px-4 py-3 sm:px-5 sm:py-4">
         {addedFoods.length > 0 ? (
           <>
             <div className="flex items-center justify-between">
@@ -220,9 +219,6 @@ export default function MenuPage() {
           style={{ transformStyle: "preserve-3d", transformOrigin: "bottom center" }}
         >
           <div className="relative h-full w-full" style={{ transformStyle: "preserve-3d" }}>
-            {/* page 2, always rendered behind the cover (same footprint as the closed cover,
-                so it's naturally hidden until the cover swings away). Centered on the spine
-                (x:0, the cover's own hinge) so its position never shifts between stages. */}
             <motion.div
               initial={false}
               animate={{ x: "-50%" }}
@@ -231,10 +227,8 @@ export default function MenuPage() {
               <FoodSelectionPage />
             </motion.div>
 
-            {/* cover, hinged on its left edge, two-sided. Swings a full 360deg so it folds all
-                the way back, ending flat behind the spread with its front face up again. */}
             <motion.div
-              initial={false}
+              initial={{ rotateY: 0, z: 0 }}
               animate={{ rotateY: open ? -360 : 0, z: open ? -30 : 0 }}
               transition={{ duration: 1.4, ease: EASE }}
               className="absolute left-0 top-0 h-full w-full"
@@ -256,7 +250,7 @@ export default function MenuPage() {
                 className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-sm bg-[#f6ead6] text-ink/35 shadow-2xl"
                 style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-dashed border-ink/20">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-ink/5">
                   <ImageIcon size={20} strokeWidth={1.5} />
                 </div>
                 <span className="text-xs font-medium tracking-wide">Inside Cover</span>
@@ -271,7 +265,7 @@ export default function MenuPage() {
           <button
             type="button"
             onClick={() => setStage("standing")}
-            className="rounded-btn bg-accent border-2 border-gold px-8 py-4 text-[17px] font-semibold text-white shadow-card hover:shadow-lift transition-shadow"
+            className="rounded-btn bg-accent px-8 py-4 text-[17px] font-semibold text-white shadow-lg hover:shadow-xl transition-all"
           >
             Bring Me The Menu
           </button>
@@ -282,14 +276,14 @@ export default function MenuPage() {
             <button
               type="button"
               onClick={() => setStage("flat")}
-              className="rounded-btn bg-accent border-2 border-gold px-8 py-4 text-[17px] font-semibold text-white shadow-card hover:shadow-lift transition-shadow"
+              className="rounded-btn bg-accent px-8 py-4 text-[17px] font-semibold text-white shadow-lg hover:shadow-xl transition-all"
             >
               Go Back
             </button>
             <button
               type="button"
               onClick={() => setStage("open")}
-              className="rounded-btn bg-accent border-2 border-gold px-8 py-4 text-[17px] font-semibold text-white shadow-card hover:shadow-lift transition-shadow"
+              className="rounded-btn bg-accent px-8 py-4 text-[17px] font-semibold text-white shadow-lg hover:shadow-xl transition-all"
             >
               Open Menu
             </button>
@@ -300,7 +294,7 @@ export default function MenuPage() {
           <button
             type="button"
             onClick={() => setStage("standing")}
-            className="rounded-btn bg-accent border-2 border-gold px-8 py-4 text-[17px] font-semibold text-white shadow-card hover:shadow-lift transition-shadow"
+            className="rounded-btn bg-accent px-8 py-4 text-[17px] font-semibold text-white shadow-lg hover:shadow-xl transition-all"
           >
             Close Menu
           </button>
