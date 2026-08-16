@@ -80,10 +80,10 @@ export default function RetroTVPage() {
   return (
     <main className="relative min-h-screen w-full bg-[#0A0807] overflow-hidden flex flex-col items-center justify-center font-sans">
       
-      {/* ── Retro 90s Room & Cabinet Background Image ── */}
+      {/* ── Retro 90s Room & Cabinet Background Image (1:1 Square Format) ── */}
       <Image
-        src="/images/retro_tv_cabinet.jpg"
-        alt="90s Retro CRT TV Cabinet"
+        src="/images/retro_tv_square.jpg"
+        alt="90s Retro CRT TV Cabinet (1:1 Square)"
         fill
         priority
         className="object-cover opacity-90 scale-105 pointer-events-none"
@@ -114,14 +114,13 @@ export default function RetroTVPage() {
         </div>
       </div>
 
-      {/* ── 90s CRT Silver TV Screen Viewport Pinned Inside Cabinet ── */}
-      {/* Container aligned over the CRT TV screen in retro_tv_cabinet.jpg */}
-      <div className="relative z-20 w-full max-w-[920px] aspect-[4/3] flex items-center justify-center p-4">
+      {/* ── 90s CRT Silver TV Screen Viewport Pinned Inside 1:1 Cabinet ── */}
+      <div className="relative z-20 w-full max-w-[700px] aspect-square flex items-center justify-center p-4">
         
         {/* CRT TV Bezel & Screen Wrapper */}
-        <div className="relative w-[52%] h-[47%] mt-[4%] ml-[-3%] rounded-[18px] bg-black border-4 border-[#222] shadow-[inset_0_0_20px_rgba(0,0,0,0.9),0_0_40px_rgba(0,0,0,0.8)] overflow-hidden flex items-center justify-center">
+        <div className="relative w-[42%] h-[34%] mt-[-4%] ml-[-9%] rounded-[18px] bg-black border-4 border-[#222] shadow-[inset_0_0_20px_rgba(0,0,0,0.9),0_0_40px_rgba(0,0,0,0.8)] overflow-hidden flex items-center justify-center">
           
-          {/* Power On/Off Cathode Glow Animation */}
+          {/* Power On/Off Cathode Glow Animation (1.0s Duration) */}
           <AnimatePresence mode="wait">
             {powerOn ? (
               <motion.div
@@ -129,7 +128,7 @@ export default function RetroTVPage() {
                 initial={{ scaleY: 0.005, scaleX: 0.1, opacity: 0 }}
                 animate={{ scaleY: 1, scaleX: 1, opacity: 1 }}
                 exit={{ scaleY: 0.005, scaleX: 0.1, opacity: 0 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
+                transition={{ duration: 1.0, ease: "easeInOut" }}
                 className="relative w-full h-full bg-black overflow-hidden flex items-center justify-center"
               >
                 {/* Active Channel Content */}
