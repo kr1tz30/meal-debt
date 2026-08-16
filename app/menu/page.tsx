@@ -1,12 +1,12 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
-import { Image as ImageIcon, Search, X, RefreshCw, Share2, Printer, UtensilsCrossed, Sparkles } from "lucide-react";
+import { Image as ImageIcon, Search, X, RefreshCw, Share2, Printer, UtensilsCrossed, Sparkles, Plus, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Food } from "@/types/food";
 import { MealResult, WorkoutResult } from "@/types/result";
-import { searchFoods, getFoodById } from "@/lib/search";
+import { searchFoods, getFoodById, getTrendingFoods } from "@/lib/search";
 import { buildMealResult } from "@/lib/calculations";
 import { DEFAULT_WEIGHT_KG } from "@/lib/config";
 import { useToastStore } from "@/store/useToastStore";
@@ -37,10 +37,12 @@ function randomOrderNo() {
   return Math.floor(1000 + Math.random() * 9000).toString();
 }
 
-function FoodSelectionPage({ onOrderAndPay }: { onOrderAndPay: (food: Food, qty: number) => void }) {
+function TwoPageMenuBook({ onOrderAndPay }: { onOrderAndPay: (food: Food, qty: number) => void }) {
   const [query, setQuery] = useState("");
   const [addedIds, setAddedIds] = useState<string[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const featuredFoods = useMemo(() => getTrendingFoods(6), []);
 
   const results = useMemo(() => (query.trim() ? searchFoods(query, 5) : []), [query]);
   const addedFoods = useMemo(
@@ -70,129 +72,196 @@ function FoodSelectionPage({ onOrderAndPay }: { onOrderAndPay: (food: Food, qty:
   }
 
   return (
-    <div className="absolute right-0 top-0 flex h-full w-1/2 flex-col rounded-sm bg-[#f6ead6] shadow-2xl">
-      <div className="px-4 pt-5 text-center sm:px-6 sm:pt-6">
-        <h2 className="font-display text-[15px] font-bold tracking-tight text-ink sm:text-lg">
-          Le Gourmet
-        </h2>
-      </div>
-
-      {/* search field */}
-      <div className="relative mt-3 px-3 sm:px-4">
-        <div className="flex items-center gap-1.5 rounded-sm bg-ink/5 px-2.5 py-1.5">
-          <Search size={11} className="shrink-0 text-ink/40" />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search dishes..."
-            className="w-full bg-transparent text-[9px] text-ink placeholder:text-ink/35 focus:outline-none sm:text-[10.5px]"
-          />
-          {query && (
-            <button type="button" onClick={() => setQuery("")} aria-label="Clear search">
-              <X size={11} className="text-ink/40" />
-            </button>
-          )}
+    <div className="absolute left-0 top-0 flex h-full w-full rounded-sm bg-[#f6ead6] shadow-2xl overflow-hidden border border-[#e6d8c3]">
+      
+      {/* ── LEFT PAGE: Chef's Curated Menu & Recommendations ── */}
+      <div className="w-1/2 h-full flex flex-col p-4 sm:p-5 border-r border-ink/10 relative shadow-[inset_-8px_0_16px_rgba(0,0,0,0.04)]">
+        {/* Header */}
+        <div className="text-center pb-2 border-b border-ink/10">
+          <span className="font-mono text-[8px] sm:text-[9px] uppercase tracking-widest text-gold font-bold">EST. 2026</span>
+          <h2 className="font-display text-base sm:text-lg font-bold text-ink tracking-tight">Le Gourmet</h2>
+          <p className="font-script text-xs text-accent italic">Carte des Plats</p>
         </div>
 
-        {query.trim() && (
-          <div className="absolute inset-x-3 top-[calc(100%+4px)] z-10 overflow-hidden rounded-sm bg-[#fffaf0] shadow-2xl sm:inset-x-4">
-            {results.length > 0 ? (
-              results.map((food) => (
-                <button
-                  key={food.id}
-                  type="button"
-                  onClick={() => addFood(food)}
-                  className="flex w-full items-center gap-2 px-2.5 py-1.5 text-left hover:bg-ink/5"
-                >
-                  <span className="text-[12px] leading-none">{food.emoji}</span>
-                  <span className="flex-1 truncate text-[9px] text-ink/85 sm:text-[10px]">
-                    {food.name}
+        {/* Featured Items List */}
+        <div className="flex-1 min-h-0 overflow-y-auto my-2 pr-1 space-y-1.5">
+          <p className="text-[8.5px] font-mono font-bold uppercase tracking-wider text-ink/50 mb-1">
+            ★ Chef's Recommendations
+          </p>
+          {featuredFoods.map((food) => {
+            const isAdded = addedIds.includes(food.id);
+            return (
+              <button
+                key={food.id}
+                type="button"
+                onClick={() => addFood(food)}
+                className={`w-full flex items-center justify-between p-2 rounded transition-all text-left group ${
+                  isAdded ? "bg-gold/20 border border-gold/40" : "bg-ink/[0.03] hover:bg-gold/15"
+                }`}
+              >
+                <div className="flex items-center gap-2 truncate">
+                  <span className="text-base group-hover:scale-110 transition-transform">{food.emoji}</span>
+                  <div className="truncate">
+                    <p className="text-[10px] sm:text-[11px] font-bold text-ink truncate leading-tight">{food.name}</p>
+                    <p className="text-[8px] text-ink/50 font-mono truncate">{food.category}</p>
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  <span className="text-[9.5px] font-mono font-bold text-accent block">{food.calories} kcal</span>
+                  <span className={`text-[7.5px] font-bold uppercase flex items-center gap-0.5 justify-end ${
+                    isAdded ? "text-emerald-700" : "text-gold"
+                  }`}>
+                    {isAdded ? (
+                      <>
+                        <Check size={8} /> ADDED
+                      </>
+                    ) : (
+                      <>
+                        <Plus size={8} /> ADD
+                      </>
+                    )}
                   </span>
-                  <span className="whitespace-nowrap text-[7.5px] text-ink/45 sm:text-[9px]">
-                    {food.calories} kcal
-                  </span>
-                </button>
-              ))
-            ) : (
-              <p className="px-2 py-2 text-center text-[8px] italic text-ink/40">
-                No dishes found.
-              </p>
-            )}
-          </div>
-        )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Left Page Footer */}
+        <div className="pt-2 border-t border-ink/10 text-center">
+          <p className="font-script text-[9.5px] text-ink/60 italic">
+            "Translate every delicious feast into workout debt."
+          </p>
+        </div>
       </div>
 
-      <div className="mt-3 min-h-0 flex-1 overflow-y-auto px-3 sm:px-4">
-        {addedFoods.length > 0 ? (
-          <div className="flex flex-col gap-1">
-            {addedFoods.map((food) => {
-              const isSelected = food.id === selectedId;
-              return (
-                <div
-                  key={food.id}
-                  className={`group flex items-center gap-1 rounded-sm transition-colors ${
-                    isSelected ? "bg-gold/20" : "hover:bg-ink/5"
-                  }`}
-                >
+      {/* ── RIGHT PAGE: Order Builder & Bill Payment ── */}
+      <div className="w-1/2 h-full flex flex-col p-4 sm:p-5 relative shadow-[inset_8px_0_16px_rgba(0,0,0,0.03)]">
+        {/* Right Page Header */}
+        <div className="pb-2 text-center border-b border-ink/10">
+          <h3 className="font-display text-sm sm:text-base font-bold text-ink tracking-tight">Your Order</h3>
+          <p className="text-[8.5px] font-mono text-ink/40">Select dishes or search below</p>
+        </div>
+
+        {/* Search Field */}
+        <div className="relative mt-2.5">
+          <div className="flex items-center gap-1.5 rounded-sm bg-ink/5 px-2.5 py-1.5">
+            <Search size={11} className="shrink-0 text-ink/40" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search full menu..."
+              className="w-full bg-transparent text-[9px] text-ink placeholder:text-ink/35 focus:outline-none sm:text-[10px]"
+            />
+            {query && (
+              <button type="button" onClick={() => setQuery("")} aria-label="Clear search">
+                <X size={11} className="text-ink/40" />
+              </button>
+            )}
+          </div>
+
+          {query.trim() && (
+            <div className="absolute inset-x-0 top-[calc(100%+4px)] z-20 overflow-hidden rounded-sm bg-[#fffaf0] shadow-2xl border border-ink/10">
+              {results.length > 0 ? (
+                results.map((food) => (
                   <button
+                    key={food.id}
                     type="button"
-                    onClick={() => setSelectedId(food.id)}
-                    className="flex flex-1 items-center gap-2 px-2 py-1.5 text-left"
+                    onClick={() => addFood(food)}
+                    className="flex w-full items-center gap-2 px-2.5 py-1.5 text-left hover:bg-ink/5"
                   >
-                    <span className="text-[13px] leading-none sm:text-base">{food.emoji}</span>
-                    <span className="flex-1 truncate text-[9px] leading-snug text-ink/85 sm:text-[10.5px]">
+                    <span className="text-[12px] leading-none">{food.emoji}</span>
+                    <span className="flex-1 truncate text-[9px] text-ink/85 sm:text-[10px]">
                       {food.name}
                     </span>
-                    <span className="whitespace-nowrap text-[8px] leading-snug text-ink/50 sm:text-[9.5px]">
+                    <span className="whitespace-nowrap text-[7.5px] text-ink/45 sm:text-[9px]">
                       {food.calories} kcal
                     </span>
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => removeFood(food.id)}
-                    aria-label={`Remove ${food.name}`}
-                    className="shrink-0 pr-2 text-ink/30 hover:text-accent"
+                ))
+              ) : (
+                <p className="px-2 py-2 text-center text-[8px] italic text-ink/40">
+                  No dishes found.
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Added Foods Order List */}
+        <div className="mt-2.5 min-h-0 flex-1 overflow-y-auto pr-1">
+          {addedFoods.length > 0 ? (
+            <div className="flex flex-col gap-1">
+              {addedFoods.map((food) => {
+                const isSelected = food.id === selectedId;
+                return (
+                  <div
+                    key={food.id}
+                    className={`group flex items-center gap-1 rounded-sm transition-colors ${
+                      isSelected ? "bg-gold/20" : "hover:bg-ink/5"
+                    }`}
                   >
-                    <X size={11} />
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <p className="mt-4 text-center text-[8px] italic text-ink/35 sm:text-[9.5px]">
-            Search and add dishes to build your list.
-          </p>
-        )}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedId(food.id)}
+                      className="flex flex-1 items-center gap-2 px-2 py-1.5 text-left"
+                    >
+                      <span className="text-[13px] leading-none sm:text-base">{food.emoji}</span>
+                      <span className="flex-1 truncate text-[9px] leading-snug text-ink/85 sm:text-[10px]">
+                        {food.name}
+                      </span>
+                      <span className="whitespace-nowrap text-[8px] leading-snug text-ink/50 sm:text-[9px]">
+                        {food.calories} kcal
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeFood(food.id)}
+                      aria-label={`Remove ${food.name}`}
+                      className="shrink-0 pr-2 text-ink/30 hover:text-accent"
+                    >
+                      <X size={11} />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="mt-6 text-center text-[8.5px] italic text-ink/40">
+              Tap any dish on the left or search above to build your order.
+            </p>
+          )}
+        </div>
+
+        {/* Right Page Running Total + Order Action */}
+        <div className="shrink-0 pt-2 border-t border-ink/10">
+          {addedFoods.length > 0 ? (
+            <>
+              <div className="flex items-center justify-between">
+                <span className="text-[8px] font-medium uppercase tracking-[0.1em] text-ink/50 sm:text-[9px]">
+                  Total ({addedFoods.length} {addedFoods.length === 1 ? "dish" : "dishes"})
+                </span>
+                <span className="font-display text-[14px] font-bold text-ink sm:text-base">
+                  {totalCalories}{" "}
+                  <span className="text-[9px] font-normal text-ink/50 sm:text-[10px]">kcal</span>
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={handleOrderAndPay}
+                className="mt-2 w-full rounded-sm bg-accent py-2 text-[9px] font-semibold uppercase tracking-wide text-white shadow-soft transition-shadow hover:shadow-card sm:text-[10px]"
+              >
+                Order &amp; Pay Bill
+              </button>
+            </>
+          ) : (
+            <p className="text-center text-[8px] italic text-ink/40 py-1">
+              Add dishes to see the total.
+            </p>
+          )}
+        </div>
       </div>
 
-      {/* running total + order action */}
-      <div className="shrink-0 px-4 py-3 sm:px-5 sm:py-4">
-        {addedFoods.length > 0 ? (
-          <>
-            <div className="flex items-center justify-between">
-              <span className="text-[8px] font-medium uppercase tracking-[0.1em] text-ink/50 sm:text-[9.5px]">
-                Total ({addedFoods.length} {addedFoods.length === 1 ? "dish" : "dishes"})
-              </span>
-              <span className="font-display text-[15px] font-bold text-ink sm:text-lg">
-                {totalCalories}{" "}
-                <span className="text-[9px] font-normal text-ink/50 sm:text-[11px]">kcal</span>
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={handleOrderAndPay}
-              className="mt-2 w-full rounded-sm bg-accent py-2 text-[9px] font-semibold uppercase tracking-wide text-white shadow-soft transition-shadow hover:shadow-card sm:text-[10.5px]"
-            >
-              Order &amp; Pay Bill
-            </button>
-          </>
-        ) : (
-          <p className="text-center text-[8px] italic text-ink/40 sm:text-[9.5px]">
-            Add dishes to see the total.
-          </p>
-        )}
-      </div>
     </div>
   );
 }
@@ -310,7 +379,7 @@ export default function MenuPage() {
                     open ? "pointer-events-auto" : "pointer-events-none"
                   }`}
                 >
-                  <FoodSelectionPage onOrderAndPay={startPrintingFlow} />
+                  <TwoPageMenuBook onOrderAndPay={startPrintingFlow} />
                 </motion.div>
 
                 <motion.div
