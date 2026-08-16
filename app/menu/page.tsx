@@ -273,22 +273,13 @@ export default function MenuPage() {
         )}
 
         {stage === "standing" && (
-          <>
-            <button
-              type="button"
-              onClick={() => setStage("flat")}
-              className="rounded-btn bg-accent px-8 py-4 text-[17px] font-semibold text-white shadow-lg hover:shadow-xl transition-all"
-            >
-              Go Back
-            </button>
-            <button
-              type="button"
-              onClick={() => setStage("open")}
-              className="rounded-btn bg-accent px-8 py-4 text-[17px] font-semibold text-white shadow-lg hover:shadow-xl transition-all"
-            >
-              Open Menu
-            </button>
-          </>
+          <button
+            type="button"
+            onClick={() => setStage("open")}
+            className="rounded-btn bg-accent px-8 py-4 text-[17px] font-semibold text-white shadow-lg hover:shadow-xl transition-all"
+          >
+            Open Menu
+          </button>
         )}
 
         {stage === "open" && (
