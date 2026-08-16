@@ -1,6 +1,7 @@
 "use client";
 
-import { Github, Moon, Sun } from "lucide-react";
+import Link from "next/link";
+import { Github, Moon, Sun, Tv, UtensilsCrossed } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
 import { useAppStore } from "@/store/useAppStore";
 import { ChefMouseIcon } from "@/components/Story/BistroSign";
@@ -26,7 +27,21 @@ export function Navbar() {
           <span>Meal Debt</span>
         </button>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
+          <Link
+            href="/tv"
+            className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#00FF66] bg-black/80 border border-[#00FF66]/40 px-3 py-1.5 rounded-full hover:bg-black transition-all shadow-md"
+          >
+            <Tv size={14} />
+            CRT TV EXPERIENCE
+          </Link>
+          <Link
+            href="/menu"
+            className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-gold-soft bg-gold/15 border border-gold/40 px-3 py-1.5 rounded-full hover:bg-gold/25 transition-all shadow-md"
+          >
+            <UtensilsCrossed size={14} />
+            3D MENU
+          </Link>
           {phase !== "idle" && (
             <button
               onClick={reset}
