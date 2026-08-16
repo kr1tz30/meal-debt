@@ -367,7 +367,11 @@ export default function MenuPage() {
               initial={false}
               animate={BOOK_VARIANTS[stage]}
               transition={{ duration: 1.1, ease: EASE }}
-              className="relative w-[240px] sm:w-[300px] md:w-[360px] aspect-[360/504]"
+              onClick={() => {
+                if (stage === "flat") setStage("standing");
+                else if (stage === "standing") setStage("open");
+              }}
+              className="relative w-[240px] sm:w-[300px] md:w-[360px] aspect-[360/504] cursor-pointer group"
               style={{ transformStyle: "preserve-3d", transformOrigin: "bottom center" }}
             >
               <div className="relative h-full w-full" style={{ transformStyle: "preserve-3d" }}>
@@ -386,7 +390,13 @@ export default function MenuPage() {
                   initial={{ rotateY: 0, z: 0 }}
                   animate={{ rotateY: open ? -360 : 0, z: open ? -30 : 0 }}
                   transition={{ duration: 1.4, ease: EASE }}
-                  className="absolute left-0 top-0 h-full w-full"
+                  onClick={(e) => {
+                    if (open) {
+                      e.stopPropagation();
+                      setStage("standing");
+                    }
+                  }}
+                  className="absolute left-0 top-0 h-full w-full cursor-pointer"
                   style={{ transformStyle: "preserve-3d", transformOrigin: "left center" }}
                 >
                   {/* front face */}
@@ -396,7 +406,7 @@ export default function MenuPage() {
                       alt="Le Gourmet menu"
                       fill
                       priority
-                      className="object-contain drop-shadow-2xl"
+                      className="object-contain drop-shadow-2xl group-hover:scale-[1.02] transition-transform duration-300"
                     />
                   </div>
 
