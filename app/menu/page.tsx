@@ -221,8 +221,9 @@ export default function MenuPage() {
           <div className="relative h-full w-full" style={{ transformStyle: "preserve-3d" }}>
             <motion.div
               initial={false}
-              animate={{ x: "-50%" }}
-              className="absolute left-0 top-0 h-full w-[480px] sm:w-[600px] md:w-[720px]"
+              animate={{ x: "-50%", opacity: open ? 1 : 0 }}
+              transition={{ duration: 0.5, ease: EASE }}
+              className={`absolute left-0 top-0 h-full w-[480px] sm:w-[600px] md:w-[720px] ${open ? "pointer-events-auto" : "pointer-events-none"}`}
             >
               <FoodSelectionPage />
             </motion.div>
